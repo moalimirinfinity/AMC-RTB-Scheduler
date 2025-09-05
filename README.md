@@ -29,7 +29,7 @@ The project follows a three-stage pipeline, managed by the `Makefile`.
 
 This command prepares the environment for the project.
 * Installs necessary system packages like `git`, `build-essential`, and `linux-tools` using `apt-get`.
-* Clones the [MiBench repository](https://github.com/vanhauser-thc/MiBench) if it's not already present.
+* Clones the [mibench repository](https://github.com/embecosm/mibench) if it's not already present.
 * Creates a Python virtual environment (`venv`) and installs the required `pandas` library.
 
 ### 2. Data Collection & Task Generation (`make data`)
@@ -97,5 +97,6 @@ You can also run each step individually:
 To remove all generated files, including the virtual environment, MiBench, and data files, run:
 ```sh
 make clean
+
 
 
