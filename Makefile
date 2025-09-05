@@ -47,7 +47,7 @@ wcet_data.json: collect_wcet.py venv mibench/
 # Target to clean up all generated files
 clean:
 	@echo "🧹 Cleaning up generated files..."
-	rm -rf venv mibench/ perf_raw.csv wcet_data.json task_set.json
+	rm -rf venv mibench/ perf_raw.csv wcet_data.json task_set.json *.png
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name "__pycache__" -delete
 	@echo "✅ Cleanup complete."
@@ -55,4 +55,3 @@ clean:
 # Dependency for venv target to ensure mibench is cloned
 mibench/:
 	git clone https://github.com/embecosm/mibench.git
-
