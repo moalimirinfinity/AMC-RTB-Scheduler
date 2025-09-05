@@ -3,7 +3,7 @@
 
 This repository provides a complete workflow for the analysis and simulation of the **Adaptive Mixed-Criticality with Response-Time Bound (AMC-RTB)** scheduling algorithm, in the embedded systems course. The project is designed to be fully reproducible and automated. It starts by measuring real-world execution times from the **MiBench benchmark suite**, synthesizes a mixed-criticality periodic task set, performs a formal response-time analysis based on established academic research, and finally, runs discrete-event simulations to visualize the scheduler's behavior in both LO- and HI-criticality modes.
 
-The theoretical foundation for the analysis is based on the paper: *S.K. Baruah, A. Burns, and R.I. Davis, "Response-Time Analysis for Mixed Criticality Systems," RTSS, 2011.* [cite: 2, 3, 4, 5, 6, 7, 8]
+The theoretical foundation for the analysis is based on the paper: *S.K. Baruah, A. Burns, and R.I. Davis, "Response-Time Analysis for Mixed Criticality Systems," RTSS, 2011.*
 
 ---
 
@@ -97,6 +97,7 @@ You can also run each step individually:
 To remove all generated files, including the virtual environment, MiBench, and data files, run:
 ```sh
 make clean
+
 
 
 
