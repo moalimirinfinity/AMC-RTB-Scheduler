@@ -7,7 +7,7 @@ The theoretical foundation for the analysis is based on the paper: *S.K. Baruah,
 
 ---
 
-## 🚀 Features
+## Features
 
 * **Automated Workflow**: A `Makefile` automates the entire process from setup to simulation.
 * **Empirical WCET Collection**: Uses the `perf` tool on Linux to collect realistic Worst-Case Execution Time (WCET) data from MiBench benchmarks.
@@ -21,7 +21,7 @@ The theoretical foundation for the analysis is based on the paper: *S.K. Baruah,
 
 ---
 
-## ⚙️ How It Works
+##  How It Works
 
 The project follows a three-stage pipeline, managed by the `Makefile`.
 
@@ -49,7 +49,7 @@ This is the final stage where the task set is analyzed and simulated.
 
 ---
 
-## 📋 Prerequisites
+##  Prerequisites
 
 * A Debian-based Linux distribution (e.g., Ubuntu) for the `apt-get` commands in `setup.sh`.
 * Python 3.8+
@@ -57,7 +57,7 @@ This is the final stage where the task set is analyzed and simulated.
 
 ---
 
-## ⚡️ Getting Started
+##  Getting Started
 
 To run the complete project from start to finish, follow these steps:
 
@@ -97,3 +97,4 @@ You can also run each step individually:
 To remove all generated files, including the virtual environment, MiBench, and data files, run:
 ```sh
 make clean
+
