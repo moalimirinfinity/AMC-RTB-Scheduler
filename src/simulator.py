@@ -1,27 +1,36 @@
 import heapq
 from typing import List
 from .system import Task, Job
+from enum import Enum, auto
+
+class SystemMode(Enum):
+    LO = auto()
+    HI = auto()
+
+class Scenario(Enum):
+    LO_MODE = auto()
+    HI_MODE = auto()
 
 class Simulator:
     """Event-driven simulator for an AMC fixed-priority preemptive scheduler."""
     def __init__(self, task_set: List[Task]):
         self.tasks = task_set
         self.time = 0
-        self.system_mode = 'LO'
-        self.ready_queue = [] # A min-heap of Jobs, prioritized by priority
+        self.system_mode = SystemMode.LO
+        self.ready_queue: List[Job] = []  # A min-heap of Jobs, ordered by priority
         self.current_job: Job | None = None
         self.log = []
+        self.scenario: Scenario | None = None
 
     def _add_log(self, message: str):
         self.log.append(f"[{self.time:06d}] {message}")
 
     def _release_jobs(self):
-        """Check for new job releases at the current time."""
+        """Check for new job releases at the current time and add them to the ready queue."""
         for task in self.tasks:
             if self.time % task.period == 0:
-                # In the HI_MODE scenario, HI-crit tasks use their C(HI)
                 exec_time = task.wcet_lo
-                if self.scenario == 'HI_MODE' and task.criticality == 'HI':
+                if self.scenario == Scenario.HI_MODE and task.criticality == 'HI':
                     exec_time = task.wcet_hi
 
                 job = Job(
@@ -34,14 +43,16 @@ class Simulator:
                 heapq.heappush(self.ready_queue, job)
                 self._add_log(f"Job Released: {job.name}, Prio: {job.priority}, WCET: {job.remaining_wcet}")
 
+    def _handle_mode_switch(self):
+        """If in HI mode, drop all LO-criticality jobs."""
+        if self.system_mode == SystemMode.HI and any(j.criticality == 'LO' for j in self.ready_queue):
+            self.ready_queue = [j for j in self.ready_queue if j.criticality == 'HI']
+            heapq.heapify(self.ready_queue)
+            self._add_log("System switched to HI mode. Dropped all LO-criticality jobs.")
+
     def _scheduler_tick(self):
-        """Handles scheduling logic for a single time unit."""
-        if self.system_mode == 'HI':
-            # If there are any LO-crit jobs, drop them from the ready queue
-            if any(j.criticality == 'LO' for j in self.ready_queue):
-                self.ready_queue = [j for j in self.ready_queue if j.criticality == 'HI']
-                heapq.heapify(self.ready_queue)
-                self._add_log("Dropped all LO-criticality jobs from the ready queue.")
+        """Handles the core scheduling logic for a single time unit."""
+        self._handle_mode_switch()
 
         if not self.ready_queue:
             if self.current_job:
@@ -58,9 +69,10 @@ class Simulator:
             self._add_log(f"PREEMPTION: {highest_prio_job.name} preempts {self.current_job.name}")
             self.current_job = highest_prio_job
 
-    def run(self, max_time: int, scenario: str):
+    def run(self, max_time: int, scenario: Scenario):
+        """Runs the simulation for a given duration and scenario."""
         self.scenario = scenario
-        self._add_log(f"--- Simulation Started: Scenario={scenario}, Duration={max_time} ---")
+        self._add_log(f"--- Simulation Started: Scenario={scenario.name}, Duration={max_time} ---")
 
         while self.time < max_time:
             self._release_jobs()
@@ -70,18 +82,20 @@ class Simulator:
                 self.current_job.remaining_wcet -= 1
                 self.current_job.wcet_lo_budget -= 1
                 
-                if self.system_mode == 'LO' and self.current_job.wcet_lo_budget < 0:
+                # Check for criticality switch
+                if self.system_mode == SystemMode.LO and self.current_job.wcet_lo_budget < 0:
                     self._add_log(f"‼️ CRITICALITY SWITCH: {self.current_job.name} exceeded its C(LO) budget!")
-                    self.system_mode = 'HI'
-                    self._scheduler_tick() # Re-evaluate scheduler immediately after mode switch
+                    self.system_mode = SystemMode.HI
+                    self._scheduler_tick()  # Re-evaluate scheduler immediately
 
+                # Check for job completion
                 if self.current_job.remaining_wcet == 0:
-                    response_time = self.time + 1 - self.current_job.arrival_time
+                    response_time = (self.time + 1) - self.current_job.arrival_time
                     self._add_log(f"Job Finished: {self.current_job.name}, Response Time: {response_time}")
-                    if self.time + 1 > self.current_job.deadline:
+                    if (self.time + 1) > self.current_job.deadline:
                         self._add_log(f"🔥 DEADLINE MISS: {self.current_job.name} missed its deadline!")
                     
-                    heapq.heappop(self.ready_queue) # Remove completed job
+                    heapq.heappop(self.ready_queue)
                     self.current_job = None
             
             self.time += 1
@@ -89,4 +103,3 @@ class Simulator:
         print("\n--- Simulation Log ---")
         for entry in self.log:
             print(entry)
-
