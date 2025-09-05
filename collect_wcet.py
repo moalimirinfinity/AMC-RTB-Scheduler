@@ -1,9 +1,9 @@
 import subprocess
-import pandas as pd
 import json
 import os
 import re
 
+# --- Constants ---
 SELECTED_BENCHMARKS = {
     "basicmath": ("automotive/basicmath", "basicmath"),
     "qsort": ("automotive/qsort", "qsort_small"),
@@ -11,7 +11,6 @@ SELECTED_BENCHMARKS = {
 }
 ITERATIONS = 50
 OUTPUT_FILE = "wcet_data.json"
-PERF_RAW_FILE = "perf_raw.csv"
 
 def compile_benchmark(path: str):
     """Compiles a specific benchmark within the MiBench directory."""
@@ -32,18 +31,13 @@ def compile_benchmark(path: str):
 def run_and_measure(exec_path: str) -> int:
     """Runs an executable with perf stat and measures the cycle count."""
     print(f"  Running '{exec_path}' for {ITERATIONS} iterations...")
-    if os.path.exists(PERF_RAW_FILE):
-        os.remove(PERF_RAW_FILE)
-
     cycles_data = []
-    # Regex to robustly find the cycle count from perf's output
     cycle_pattern = re.compile(r"^\s*([\d,]+)\s+cycles")
 
     for _ in range(ITERATIONS):
         cmd = ["taskset", "-c", "0", "perf", "stat", "-e", "cycles", exec_path]
         result = subprocess.run(cmd, check=True, capture_output=True, text=True)
         
-        # Search stderr for the cycle count
         match = cycle_pattern.search(result.stderr)
         if match:
             cycles_str = match.group(1).replace(",", "")
@@ -58,6 +52,7 @@ def run_and_measure(exec_path: str) -> int:
     return wcet_cycles
 
 def main():
+    """Main function to orchestrate the WCET data collection."""
     if not os.path.exists("MiBench"):
         print("❌ MiBench directory not found. Please run 'make setup' first.")
         return
@@ -83,4 +78,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

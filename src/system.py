@@ -27,10 +27,9 @@ class Job:
         self.priority = self.parent_task.priority
 
     @property
-    def name(self):
+    def name(self) -> str:
         return f"{self.parent_task.name}_Job@{self.arrival_time}"
 
     @property
-    def criticality(self):
+    def criticality(self) -> str:
         return self.parent_task.criticality
-
