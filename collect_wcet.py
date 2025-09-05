@@ -13,13 +13,13 @@ ITERATIONS = 50
 OUTPUT_FILE = "wcet_data.json"
 
 def compile_benchmark(path: str):
-    """Compiles a specific benchmark within the MiBench directory."""
+    """Compiles a specific benchmark within the mibench directory."""
     print(f"  Compiling benchmark in '{path}'...")
     try:
         cpu_count = os.cpu_count() or 1
         subprocess.run(
             ["make", f"-j{cpu_count}"],
-            cwd=os.path.join("MiBench", path),
+            cwd=os.path.join("mibench", path),
             check=True,
             capture_output=True,
             text=True
@@ -53,14 +53,14 @@ def run_and_measure(exec_path: str) -> int:
 
 def main():
     """Main function to orchestrate the WCET data collection."""
-    if not os.path.exists("MiBench"):
-        print("❌ MiBench directory not found. Please run 'make setup' first.")
+    if not os.path.exists("mibench"):
+        print("❌ mibench directory not found. Please run 'make setup' first.")
         return
 
     wcet_results = {}
     for name, (path, executable) in SELECTED_BENCHMARKS.items():
         print(f"\nProcessing benchmark: {name}")
-        exec_full_path = os.path.join("MiBench", path, executable)
+        exec_full_path = os.path.join("mibench", path, executable)
         
         try:
             if not os.path.exists(exec_full_path):

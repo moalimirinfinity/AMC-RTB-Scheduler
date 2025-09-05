@@ -37,22 +37,22 @@ venv: requirements.txt setup.sh
 		venv/bin/pip install -r requirements.txt; \
 	fi
 
-# Helper target to collect WCET data from MiBench
-wcet_data.json: collect_wcet.py venv MiBench/
+# Helper target to collect WCET data from mibench
+wcet_data.json: collect_wcet.py venv mibench/
 	@echo "--------------------------------------------------"
-	@echo "📊 Collecting WCET data from MiBench benchmarks..."
+	@echo "📊 Collecting WCET data from mibench benchmarks..."
 	@echo "   This may take a few minutes."
 	$(VENV_PYTHON) collect_wcet.py
 
 # Target to clean up all generated files
 clean:
 	@echo "🧹 Cleaning up generated files..."
-	rm -rf venv MiBench/ perf_raw.csv wcet_data.json task_set.json
+	rm -rf venv mibench/ perf_raw.csv wcet_data.json task_set.json
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name "__pycache__" -delete
 	@echo "✅ Cleanup complete."
 
-# Dependency for venv target to ensure MiBench is cloned
-MiBench/:
-	git clone https://github.com/vanhauser-thc/MiBench.git
+# Dependency for venv target to ensure mibench is cloned
+mibench/:
+	git clone https://github.com/embecosm/mibench.git
 

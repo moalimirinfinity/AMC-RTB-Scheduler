@@ -7,7 +7,7 @@ task_set.json
 
 perf_raw.csv
 
-MiBench/
+mibench/
 
 .vscode/
 .idea/
