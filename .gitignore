@@ -1,0 +1,20 @@
+# Python Virtual Environment
+venv/
+
+# Python Cache files
+__pycache__/
+*.pyc
+
+# Generated data files
+wcet_data.json
+task_set.json
+
+# Raw performance data
+perf_raw.csv
+
+# External Dependencies (let setup handle this)
+MiBench/
+
+# IDE/Editor specific files (optional but good practice)
+.vscode/
+.idea/
