@@ -45,7 +45,8 @@ def run_and_measure(exec_path: str, input_file: str | None) -> int:
         cmd = ["sudo", "taskset", "-c", "0", "perf", "stat", "-e", "cycles", exec_path]
         
         if input_file:
-            input_file_path = os.path.join(.path.dirname(exec_path), input_file)
+            # This is the corrected line
+            input_file_path = os.path.join(os.path.dirname(exec_path), input_file)
             if not os.path.exists(input_file_path):
                 raise FileNotFoundError(f"Input file not found: {input_file_path}")
             cmd.append(input_file_path)
@@ -59,7 +60,7 @@ def run_and_measure(exec_path: str, input_file: str | None) -> int:
         except subprocess.CalledProcessError as e:
             # On a VM, perf might exit with an error even if the program ran.
             # We check if it's the known "not supported" message and ignore it.
-            if "<not supported>" in result.stderr:
+            if "<not supported>" in e.stderr:
                  pass # This is expected on a VM, continue without collecting data
             else:
                 print(f"\n  ❌ ERROR: perf command failed on iteration {i+1} for {exec_path}.")
