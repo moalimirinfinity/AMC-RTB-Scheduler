@@ -25,7 +25,15 @@ def generate_task_set(wcet_data: Dict[str, int]) -> List[Dict[str, Any]]:
     for i, (name, wcet_lo) in enumerate(sorted_benchmarks):
         is_hi_crit = random.random() < CRITICALITY_HI_PROB
         
-        period = int(wcet_lo * random.uniform(*PERIOD_FACTOR_RANGE))
+        # --- FIX: Ensure a non-zero period ---
+        # If wcet_lo is 0 (due to VM measurement issue), use a small base to prevent a period of 0.
+        effective_wcet = wcet_lo if wcet_lo > 0 else 1 
+        period = int(effective_wcet * random.uniform(*PERIOD_FACTOR_RANGE))
+        
+        # Ensure period is at least 1
+        if period == 0:
+            period = 1
+
         deadline = period  # Assume Deadline = Period for this model.
         
         task = {
